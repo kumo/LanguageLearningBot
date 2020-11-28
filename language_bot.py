@@ -5,14 +5,14 @@
 # This program is dedicated to the public domain under the CC0 license.
 
 """
-Simple Bot to reply to Telegram messages.
+Simple Bot to quiz vocabulary.
 
 First, a few handler functions are defined. Then, those functions are passed to
 the Dispatcher and registered at their respective places.
 Then, the bot is started and runs until we press Ctrl-C on the command line.
 
 Usage:
-Basic Echobot example, repeats messages.
+Simple bot to quiz vocabulary
 Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
@@ -29,7 +29,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Use dotenv for bot token and you-get path
+# Use dotenv for bot token
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
@@ -43,11 +43,65 @@ load_dotenv(dotenv_path)
 # Get variables from the environment
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 
+import datetime
+import random
+
+QUESTIONS = [
+    ['おはよう', 'Good morning'],
+    ['おはようございます', 'Good morning (polite)'],
+    ['おやすみ（なさい）', 'Good night'],
+    ['ごちそうさま（でした）', 'Thank you for the meal (after eating)'],
+    ['よろしくおねがいします', 'Nice to meet you'],
+    ['はじめまして', 'How do you do?'],
+    ['すみません', "Excuse me;I'm sorry"],
+    ['ただいま', "I'm home"],
+    ['さようなら', 'Good bye'],
+    ['こんばんは', 'Good evening'],
+    ['こんにちは', 'Good afternoon'],
+    ['おかえり（なさい）', 'Welcome home'],
+    ['いってらっしゃい', 'Please go and come back'],
+    ['いってきます', 'I’ll go and come back'],
+    ['いいえ', 'No;Not at all'],
+    ['ありがとうございます', 'Thank you (polite)'],
+    ['ありがとう', 'Thank you'],
+]
+
+def send_greeting(update: Update, context: CallbackContext) -> None:
+    now = datetime.datetime.now()
+
+    if now.hour < 11:
+        update.message.reply_text("おはよう")
+    elif now.hour < 19:
+        update.message.reply_text("こんにちは")
+    else:
+        update.message.reply_text("こんばんは")
+
+
+def choose_questions(num_questions):
+    random.shuffle(QUESTIONS)
+
+    questions = QUESTIONS[:num_questions]
+
+    return questions
+
+
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
-    update.message.reply_text('おはよう')
+
+    send_greeting(update, context)
+
+    questions = choose_questions(5)
+
+    context.user_data['questions'] = questions
+    context.user_data['question_num'] = 0
+    context.user_data['correct'] = 0
+
+    update.message.reply_text("I will now ask you {} questions.".format(5))
+
+    question = questions[0]
+    update.message.reply_text(question[0])
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
@@ -55,12 +109,50 @@ def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Help!')
 
 
-def echo(update: Update, context: CallbackContext) -> None:
-    """Echo the user message."""
-    if update.message.text == 'Good morning':
-        update.message.reply_text('Good morning to you too!')
+def check_answer(question, reply) -> bool:
+    if ';' in question[1]:
+        answers = question[1].split(';')
+
+        for answer in answers:
+            if reply == answer:
+                return True
+        
+        return False
+
     else:
-        update.message.reply_text('The correct answer was "Good morning"')
+        if reply == question[1]:
+            return True
+        else:
+            return False
+
+
+def check_response(update: Update, context: CallbackContext) -> None:
+    """Check the user's response."""
+
+    question_num = context.user_data['question_num']
+    questions = context.user_data['questions']
+    correct = context.user_data['correct']
+
+    question = questions[question_num]
+
+    result = check_answer(question, update.message.text)
+
+    if result == True:
+        update.message.reply_text('Correct!')
+        correct = correct + 1
+        context.user_data['correct'] = correct
+    else:
+        update.message.reply_text('The correct answer was "{}".'.format(question[1]))
+
+    question_num = question_num + 1
+    context.user_data['question_num'] = question_num
+
+    if question_num == 5:
+        update.message.reply_text('You scored {} out of {}.'.format(correct, 5))
+        update.message.reply_text('To try again, just /start.')
+    else:
+        question = questions[question_num]
+        update.message.reply_text(question[0])
 
 
 def main():
@@ -78,7 +170,7 @@ def main():
     dispatcher.add_handler(CommandHandler("help", help_command))
 
     # on noncommand i.e message - echo the message on Telegram
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, check_response))
 
     # Start the Bot
     updater.start_polling()
