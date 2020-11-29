@@ -150,6 +150,11 @@ def check_response(update: Update, context: CallbackContext) -> None:
     if result == True:
         update.message.reply_text('Correct!')
         context.user_data['correct'] += 1
+
+        # TODO tell the alternative answer(s) to the user
+        if ';' in question[1]:
+            update.message.reply_text('Do not forget that there are alternative answers!')
+
     else:
         update.message.reply_text('The correct answer was "{}".'.format(question[1]))
 
