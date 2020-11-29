@@ -1,0 +1,515 @@
+[[Greetings]]
+japanese = "おはよう"
+english = "Good morning"
+    
+[[Greetings]]
+japanese = "おはようございます"
+english = "Good morning (polite)"
+    
+[[Greetings]]
+japanese = "おやすみ（なさい）"
+english = "Good night"
+    
+[[Greetings]]
+japanese = "ごちそうさま（でした）"
+english = "Thank you for the meal (after eating)"
+    
+[[Greetings]]
+japanese = "よろしくおねがいします"
+english = "Nice to meet you"
+    
+[[Greetings]]
+japanese = "はじめまして"
+english = "How do you do?"
+    
+[[Greetings]]
+japanese = "すみません"
+english = "Excuse me;I'm sorry"
+    
+[[Greetings]]
+japanese = "ただいま"
+english = "I'm home"
+    
+[[Greetings]]
+japanese = "さようなら"
+english = "Good bye"
+    
+[[Greetings]]
+japanese = "こんばんは"
+english = "Good evening"
+    
+[[Greetings]]
+japanese = "こんにちは"
+english = "Good afternoon"
+    
+[[Greetings]]
+japanese = "おかえり（なさい）"
+english = "Welcome home"
+    
+[[Greetings]]
+japanese = "いってらっしゃい"
+english = "Please go and come back"
+    
+[[Greetings]]
+japanese = "いってきます"
+english = "I'll go and come back"
+    
+[[Greetings]]
+japanese = "いいえ"
+english = "No;Not at all"
+    
+[[Greetings]]
+japanese = "ありがとうございます"
+english = "Thank you (polite)"
+    
+[[Greetings]]
+japanese = "ありがとう"
+english = "Thank you"
+
+[[Countries]]
+japanese = "アメリカ"
+english = "USA;U.S.A."
+
+[[Countries]]
+japanese = "イギリス"
+english = "Britain"
+
+[[Countries]]
+japanese = "オーストラリア"
+english = "Australia"
+
+[[Countries]]
+japanese = "かんこく"
+english = "Korea"
+
+[[Countries]]
+japanese = "スウェーデン"
+english = "Sweden"
+
+[[Countries]]
+japanese = "ちゅうごく"
+english = "China"
+
+[[Vocabulary]]
+japanese = "あの"
+english = "um..."
+
+[[Time-Age]]
+japanese = "いちねんせい"
+english = "first-year student"
+
+[[Vocabulary]]
+japanese = "いま"
+english = "now"
+
+[[Vocabulary]]
+japanese = "えいご"
+english = "English language"
+
+[[Vocabulary]]
+japanese = "ええ"
+english = "yes"
+
+[[Vocabulary]]
+japanese = "がくせい"
+english = "student"
+
+[[Vocabulary]]
+japanese = "～ご"
+english = "...language"
+
+[[Vocabulary]]
+japanese = "こうこう"
+english = "high school"
+
+[[Occupations]]
+japanese = "こうこうせい"
+english = "high school student"
+
+[[Majors]]
+japanese = "こくさいかんけい"
+english = "international relations"
+
+[[Vocabulary]]
+japanese = "ごご"
+english = "P.M."
+
+[[Vocabulary]]
+japanese = "ごぜん"
+english = "A.M."
+
+[[Vocabulary]]
+japanese = "～さん"
+english = "Mr./Ms...."
+
+[[Vocabulary]]
+japanese = "～じ"
+english = "o'clock"
+
+[[Occupations]]
+japanese = "しゅふ"
+english = "housewife"
+
+[[Vocabulary]]
+japanese = "～じん"
+english = "...people"
+
+[[Majors]]
+japanese = "じんるいがく"
+english = "anthropology"
+
+[[Vocabulary]]
+japanese = "せんこう"
+english = "major"
+
+[[Vocabulary]]
+japanese = "せんせい"
+english = "teacher;Professor"
+
+[[Vocabulary]]
+japanese = "そうです"
+english = "That's right"
+
+[[Vocabulary]]
+japanese = "そうですか"
+english = "I see.; Is that so?"
+
+[[Vocabulary]]
+japanese = "だいがく"
+english = "college; university"
+
+[[Occupations]]
+japanese = "だいがくいんせい"
+english = "graduate student"
+
+[[Vocabulary]]
+japanese = "でんわ"
+english = "telephone"
+
+[[Vocabulary]]
+japanese = "ともだち"
+english = "friend"
+
+[[Vocabulary]]
+japanese = "なまえ"
+english = "name"
+
+[[Vocabulary]]
+japanese = "なん/なに"
+english = "what"
+
+[[Vocabulary]]
+japanese = "にじはん"
+english = "half past two"
+
+[[Vocabulary]]
+japanese = "にほん"
+english = "Japan"
+
+[[Vocabulary]]
+japanese = "にほんご"
+english = "Japanese language"
+
+[[Vocabulary]]
+japanese = "にほんじん"
+english = "Japanese people"
+
+[[Vocabulary]]
+japanese = "～ねんせい"
+english = "...year student"
+
+[[Vocabulary]]
+japanese = "はい"
+english = "yes"
+
+[[Vocabulary]]
+japanese = "はん"
+english = "half"
+
+[[Vocabulary]]
+japanese = "ばんごう"
+english = "number"
+
+[[Vocabulary]]
+japanese = "りゅうがくせい"
+english = "international student"
+
+[[Vocabulary]]
+japanese = "わたし"
+english = "I"
+
+[[Vocabulary]]
+japanese = "いちじ"
+english = "one o'clock"
+
+[[Vocabulary]]
+japanese = "～さい"
+english = "...years old"
+
+[[Occupations]]
+japanese = "いしゃ"
+english = "doctor"
+
+[[Majors]]
+japanese = "せいじ"
+english = "politics"
+
+[[Occupations]]
+japanese = "べんごし"
+english = "lawyer"
+
+[[Majors]]
+japanese = "コンピューター"
+english = "computer"
+
+[[Majors]]
+japanese = "ビジネス"
+english = "business"
+
+[[Majors]]
+japanese = "れきし"
+english = "history"
+
+[[Occupations]]
+japanese = "かいしゃいん"
+english = "office worker"
+
+[[Occupations]]
+japanese = "しごと"
+english = "job;work;occupation"
+
+[[Occupations]]
+japanese = "だいがくせい"
+english = "college student"
+
+[[Majors]]
+japanese = "ぶんがく"
+english = "literature"
+
+[[Time-Age]]
+japanese = "いっさい"
+english = "one year old"
+
+[[Time-Age]]
+japanese = "いっぷん"
+english = "one minute"
+
+[[Time-Age]]
+japanese = "きゅうさい"
+english = "nine years old"
+
+[[Time-Age]]
+japanese = "きゅうふん"
+english = "nine minutes"
+
+[[Time-Age]]
+japanese = "くじ"
+english = "nine o'clock"
+
+[[Time-Age]]
+japanese = "ごさい"
+english = "five years old"
+
+[[Time-Age]]
+japanese = "ごじ"
+english = "five o'clock"
+
+[[Time-Age]]
+japanese = "ごふん"
+english = "five minutes"
+
+[[Time-Age]]
+japanese = "さんさい"
+english = "three years old"
+
+[[Time-Age]]
+japanese = "さんじ"
+english = "three o'clock"
+
+[[Time-Age]]
+japanese = "さんじっぷん/さんじゅっぷん"
+english = "thirty minutes"
+
+[[Time-Age]]
+japanese = "さんぷん"
+english = "three minutes"
+
+[[Time-Age]]
+japanese = "しちじ"
+english = "seven o'clock"
+
+[[Time-Age]]
+japanese = "じっさい"
+english = "ten years old"
+
+[[Time-Age]]
+japanese = "じっぷん"
+english = "ten minutes"
+
+[[Time-Age]]
+japanese = "じゅういちじ"
+english = "eleven o'clock"
+
+[[Time-Age]]
+japanese = "じゅういっさい"
+english = "eleven years old"
+
+[[Time-Age]]
+japanese = "じゅういっぷん"
+english = "eleven minutes"
+
+[[Time-Age]]
+japanese = "じゅうきゅうふん"
+english = "nineteen minutes"
+
+[[Time-Age]]
+japanese = "じゅうごふん"
+english = "fifteen minutes"
+
+[[Time-Age]]
+japanese = "じゅうさんぷん"
+english = "thirteen minutes"
+
+[[Time-Age]]
+japanese = "じゅうじ"
+english = "ten o'clock"
+
+[[Time-Age]]
+japanese = "じゅうななふん"
+english = "seventeen minutes"
+
+[[Time-Age]]
+japanese = "じゅうにじ"
+english = "twelve o'clock"
+
+[[Time-Age]]
+japanese = "じゅうにふん"
+english = "twelve minutes"
+
+[[Time-Age]]
+japanese = "じゅうはちふん/じゅうはっぷん"
+english = "eighteen minutes"
+
+[[Time-Age]]
+japanese = "じゅうよんぷん"
+english = "fourteen minutes"
+
+[[Time-Age]]
+japanese = "じゅうろっぷん"
+english = "sixteen minutes"
+
+[[Time-Age]]
+japanese = "じゅっさい"
+english = "ten years old"
+
+[[Time-Age]]
+japanese = "じゅっぷん"
+english = "ten minutes"
+
+[[Time-Age]]
+japanese = "ななさい"
+english = "seven years old"
+
+[[Time-Age]]
+japanese = "ななふん"
+english = "seven minutes"
+
+[[Time-Age]]
+japanese = "にさい"
+english = "two years old"
+
+[[Time-Age]]
+japanese = "にじ"
+english = "two o'clock"
+
+[[Time-Age]]
+japanese = "にじっぷん"
+english = "twenty minutes"
+
+[[Time-Age]]
+japanese = "にじゅっぷん"
+english = "twenty minutes"
+
+[[Time-Age]]
+japanese = "にふん"
+english = "two minutes"
+
+[[Time-Age]]
+japanese = "はたち"
+english = "twenty years old"
+
+[[Time-Age]]
+japanese = "はちじ"
+english = "eight o'clock"
+
+[[Time-Age]]
+japanese = "はちふん"
+english = "eight minutes"
+
+[[Time-Age]]
+japanese = "はっさい"
+english = "eight years old"
+
+[[Time-Age]]
+japanese = "はっぷん"
+english = "eight minutes"
+
+[[Time-Age]]
+japanese = "よじ"
+english = "four o'clock"
+
+[[Time-Age]]
+japanese = "よんさい"
+english = "four years old"
+
+[[Time-Age]]
+japanese = "よんぷん"
+english = "four minutes"
+
+[[Time-Age]]
+japanese = "ろくさい"
+english = "six years old"
+
+[[Time-Age]]
+japanese = "ろくじ"
+english = "six o'clock"
+
+[[Time-Age]]
+japanese = "ろっぷん"
+english = "six minutes"
+
+[[Family]]
+japanese = "おかあさん"
+english = "mother"
+
+[[Family]]
+japanese = "おとうさん"
+english = "father"
+
+[[Family]]
+japanese = "いもうと（さん）"
+english = "younger sister"
+
+[[Family]]
+japanese = "おとうと（さん）"
+english = "younger brother"
+
+[[Family]]
+japanese = "おにいさん"
+english = "older brother"
+
+[[Family]]
+japanese = "おねえさん"
+english = "older sister"
+
+[[Majors]]
+japanese = "アジアけんきゅう"
+english = "Asian studies"
+
+[[Majors]]
+japanese = "かがく"
+english = "science"
+
+[[Majors]]
+japanese = "けいざい"
+english = "economics"

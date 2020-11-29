@@ -19,7 +19,7 @@ bot.
 
 import logging
 
-from telegram import Update
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 # Enable logging
@@ -46,25 +46,8 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 import datetime
 import random
 
-QUESTIONS = [
-    ['おはよう', 'Good morning'],
-    ['おはようございます', 'Good morning (polite)'],
-    ['おやすみ（なさい）', 'Good night'],
-    ['ごちそうさま（でした）', 'Thank you for the meal (after eating)'],
-    ['よろしくおねがいします', 'Nice to meet you'],
-    ['はじめまして', 'How do you do?'],
-    ['すみません', "Excuse me;I'm sorry"],
-    ['ただいま', "I'm home"],
-    ['さようなら', 'Good bye'],
-    ['こんばんは', 'Good evening'],
-    ['こんにちは', 'Good afternoon'],
-    ['おかえり（なさい）', 'Welcome home'],
-    ['いってらっしゃい', 'Please go and come back'],
-    ['いってきます', 'I’ll go and come back'],
-    ['いいえ', 'No;Not at all'],
-    ['ありがとうございます', 'Thank you (polite)'],
-    ['ありがとう', 'Thank you'],
-]
+NUM_QUESTIONS = 5
+questions = []
 
 def send_greeting(update: Update, context: CallbackContext) -> None:
     now = datetime.datetime.now()
@@ -77,10 +60,10 @@ def send_greeting(update: Update, context: CallbackContext) -> None:
         update.message.reply_text("こんばんは")
 
 
-def choose_questions(num_questions):
-    random.shuffle(QUESTIONS)
+def choose_questions(question_set, num_questions):
+    random.shuffle(question_set)
 
-    questions = QUESTIONS[:num_questions]
+    questions = question_set[:num_questions]
 
     return questions
 
@@ -89,20 +72,36 @@ def choose_questions(num_questions):
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
+    global questions
 
     send_greeting(update, context)
 
-    start_quiz(update, context)
+    question_sets = [*questions.keys()]
+
+    if len(question_sets) == 1:
+        start_quiz(question_sets[0], update, context)
+    else:
+        # Show the user the list of available question sets
+        quiz_keyboard = [[question_set] for question_set in question_sets]
+
+        quiz_markup = ReplyKeyboardMarkup(quiz_keyboard, one_time_keyboard=True)
+
+        update.message.reply_text("Choose the questions that you want to be tested on.", reply_markup=quiz_markup)
 
 
-def start_quiz(update: Update, context: CallbackContext) -> None:
-    questions = choose_questions(5)
+def start_quiz(quiz_name: str, update: Update, context: CallbackContext) -> None:
+    global questions
+    
+    question_set = questions[quiz_name]
 
-    context.user_data['questions'] = questions
+    chosen_questions = choose_questions(question_set, NUM_QUESTIONS)
+
+    context.user_data['quiz_name'] = quiz_name
+    context.user_data['questions'] = chosen_questions
     context.user_data['question_num'] = 0
     context.user_data['correct'] = 0
 
-    update.message.reply_text("I will now ask you {} questions.".format(5))
+    update.message.reply_text("I will now ask you {} questions.".format(len(chosen_questions)))
 
     ask_question(update, context)
 
@@ -112,7 +111,7 @@ def ask_question(update: Update, context: CallbackContext) -> None:
     question_num = context.user_data['question_num']
 
     question = questions[question_num]
-    update.message.reply_text(question[0])
+    update.message.reply_text(question['japanese'])
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
@@ -121,8 +120,10 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 
 def check_answer(question, reply) -> bool:
-    if ';' in question[1]:
-        answers = question[1].split(';')
+    correct_answer = question['english']
+
+    if ';' in correct_answer:
+        answers = correct_answer.split(';')
 
         for answer in answers:
             if reply == answer:
@@ -131,7 +132,7 @@ def check_answer(question, reply) -> bool:
         return False
 
     else:
-        if reply == question[1]:
+        if reply == correct_answer:
             return True
         else:
             return False
@@ -139,6 +140,10 @@ def check_answer(question, reply) -> bool:
 
 def check_response(update: Update, context: CallbackContext) -> None:
     """Check the user's response."""
+
+    if 'quiz_name' not in context.user_data:
+        start_quiz(update.message.text, update, context)
+        return
 
     question_num = context.user_data['question_num']
     questions = context.user_data['questions']
@@ -152,16 +157,16 @@ def check_response(update: Update, context: CallbackContext) -> None:
         context.user_data['correct'] += 1
 
         # TODO tell the alternative answer(s) to the user
-        if ';' in question[1]:
+        if ';' in question['english']:
             update.message.reply_text('Do not forget that there are alternative answers!')
 
     else:
-        update.message.reply_text('The correct answer was "{}".'.format(question[1]))
+        update.message.reply_text('The correct answer was "{}".'.format(question['english']))
 
     question_num = question_num + 1
     context.user_data['question_num'] = question_num
 
-    if question_num == 5:
+    if question_num == len(questions):
         end_quiz(update, context)
     else:
         ask_question(update, context)
@@ -169,12 +174,28 @@ def check_response(update: Update, context: CallbackContext) -> None:
 
 def end_quiz(update: Update, context: CallbackContext) -> None:
     correct = context.user_data['correct']
-    
-    update.message.reply_text('You scored {} out of {}.'.format(correct, 5))
+    questions = context.user_data['questions']
+
+    update.message.reply_text('You scored {} out of {}.'.format(correct, len(questions)))
     update.message.reply_text('To try again, just /start.')
+
+    if 'quiz_name' in context.user_data:
+        del context.user_data['quiz_name']
+
+
+import toml
+
+def load_questions():
+    global questions
+    
+    questions = toml.load("genki1.toml")
+
+    print(questions)
 
 
 def main():
+    load_questions()
+
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
