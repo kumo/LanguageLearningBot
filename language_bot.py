@@ -92,6 +92,10 @@ def start(update: Update, context: CallbackContext) -> None:
 
     send_greeting(update, context)
 
+    start_quiz(update, context)
+
+
+def start_quiz(update: Update, context: CallbackContext) -> None:
     questions = choose_questions(5)
 
     context.user_data['questions'] = questions
@@ -100,7 +104,14 @@ def start(update: Update, context: CallbackContext) -> None:
 
     update.message.reply_text("I will now ask you {} questions.".format(5))
 
-    question = questions[0]
+    ask_question(update, context)
+
+
+def ask_question(update: Update, context: CallbackContext) -> None:
+    questions = context.user_data['questions']
+    question_num = context.user_data['question_num']
+
+    question = questions[question_num]
     update.message.reply_text(question[0])
 
 
@@ -131,7 +142,6 @@ def check_response(update: Update, context: CallbackContext) -> None:
 
     question_num = context.user_data['question_num']
     questions = context.user_data['questions']
-    correct = context.user_data['correct']
 
     question = questions[question_num]
 
@@ -139,8 +149,7 @@ def check_response(update: Update, context: CallbackContext) -> None:
 
     if result == True:
         update.message.reply_text('Correct!')
-        correct = correct + 1
-        context.user_data['correct'] = correct
+        context.user_data['correct'] += 1
     else:
         update.message.reply_text('The correct answer was "{}".'.format(question[1]))
 
@@ -148,11 +157,16 @@ def check_response(update: Update, context: CallbackContext) -> None:
     context.user_data['question_num'] = question_num
 
     if question_num == 5:
-        update.message.reply_text('You scored {} out of {}.'.format(correct, 5))
-        update.message.reply_text('To try again, just /start.')
+        end_quiz(update, context)
     else:
-        question = questions[question_num]
-        update.message.reply_text(question[0])
+        ask_question(update, context)
+
+
+def end_quiz(update: Update, context: CallbackContext) -> None:
+    correct = context.user_data['correct']
+    
+    update.message.reply_text('You scored {} out of {}.'.format(correct, 5))
+    update.message.reply_text('To try again, just /start.')
 
 
 def main():
