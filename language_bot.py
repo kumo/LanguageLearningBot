@@ -46,25 +46,7 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 import datetime
 import random
 
-QUESTIONS = [
-    ['おはよう', 'Good morning'],
-    ['おはようございます', 'Good morning (polite)'],
-    ['おやすみ（なさい）', 'Good night'],
-    ['ごちそうさま（でした）', 'Thank you for the meal (after eating)'],
-    ['よろしくおねがいします', 'Nice to meet you'],
-    ['はじめまして', 'How do you do?'],
-    ['すみません', "Excuse me;I'm sorry"],
-    ['ただいま', "I'm home"],
-    ['さようなら', 'Good bye'],
-    ['こんばんは', 'Good evening'],
-    ['こんにちは', 'Good afternoon'],
-    ['おかえり（なさい）', 'Welcome home'],
-    ['いってらっしゃい', 'Please go and come back'],
-    ['いってきます', 'I’ll go and come back'],
-    ['いいえ', 'No;Not at all'],
-    ['ありがとうございます', 'Thank you (polite)'],
-    ['ありがとう', 'Thank you'],
-]
+questions = []
 
 def send_greeting(update: Update, context: CallbackContext) -> None:
     now = datetime.datetime.now()
@@ -78,9 +60,13 @@ def send_greeting(update: Update, context: CallbackContext) -> None:
 
 
 def choose_questions(num_questions):
-    random.shuffle(QUESTIONS)
+    global questions
 
-    questions = QUESTIONS[:num_questions]
+    greetings_questions = questions['greetings']
+
+    random.shuffle(greetings_questions)
+
+    questions = greetings_questions[:num_questions]
 
     return questions
 
@@ -112,7 +98,7 @@ def ask_question(update: Update, context: CallbackContext) -> None:
     question_num = context.user_data['question_num']
 
     question = questions[question_num]
-    update.message.reply_text(question[0])
+    update.message.reply_text(question['japanese'])
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
@@ -121,8 +107,10 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 
 def check_answer(question, reply) -> bool:
-    if ';' in question[1]:
-        answers = question[1].split(';')
+    correct_answer = question['english']
+
+    if ';' in correct_answer:
+        answers = correct_answer.split(';')
 
         for answer in answers:
             if reply == answer:
@@ -131,7 +119,7 @@ def check_answer(question, reply) -> bool:
         return False
 
     else:
-        if reply == question[1]:
+        if reply == correct_answer:
             return True
         else:
             return False
@@ -152,11 +140,11 @@ def check_response(update: Update, context: CallbackContext) -> None:
         context.user_data['correct'] += 1
 
         # TODO tell the alternative answer(s) to the user
-        if ';' in question[1]:
+        if ';' in question['english']:
             update.message.reply_text('Do not forget that there are alternative answers!')
 
     else:
-        update.message.reply_text('The correct answer was "{}".'.format(question[1]))
+        update.message.reply_text('The correct answer was "{}".'.format(question['english']))
 
     question_num = question_num + 1
     context.user_data['question_num'] = question_num
@@ -174,7 +162,19 @@ def end_quiz(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('To try again, just /start.')
 
 
+import toml
+
+def load_questions():
+    global questions
+    
+    questions = toml.load("genki1.toml")
+
+    print(questions)
+
+
 def main():
+    load_questions()
+
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
