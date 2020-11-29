@@ -45,6 +45,7 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 import datetime
 import random
+import string
 
 NUM_QUESTIONS = 5
 questions = []
@@ -119,6 +120,13 @@ def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Help!')
 
 
+def compare_text(answer, reply) -> bool:
+    cleaned_answer = answer.translate(str.maketrans('', '', string.punctuation))
+    cleaned_reply = reply.translate(str.maketrans('', '', string.punctuation))
+
+    return cleaned_answer.casefold() == cleaned_reply.casefold()
+
+
 def check_answer(question, reply) -> bool:
     correct_answer = question['english']
 
@@ -126,13 +134,13 @@ def check_answer(question, reply) -> bool:
         answers = correct_answer.split(';')
 
         for answer in answers:
-            if reply == answer:
+            if compare_text(answer, reply):
                 return True
         
         return False
 
     else:
-        if reply == correct_answer:
+        if compare_text(correct_answer, reply):
             return True
         else:
             return False
