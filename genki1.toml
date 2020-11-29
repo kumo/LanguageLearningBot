@@ -132,15 +132,15 @@ english = "international relations"
 
 [[Vocabulary]]
 japanese = "ごご"
-english = "P.M."
+english = "P.M.;pm"
 
 [[Vocabulary]]
 japanese = "ごぜん"
-english = "A.M."
+english = "A.M.;am"
 
 [[Vocabulary]]
 japanese = "～さん"
-english = "Mr./Ms...."
+english = "Mr./Ms....;Mr;Mrs"
 
 [[Vocabulary]]
 japanese = "～じ"
@@ -172,11 +172,11 @@ english = "That's right"
 
 [[Vocabulary]]
 japanese = "そうですか"
-english = "I see.; Is that so?"
+english = "I see;Is that so?"
 
 [[Vocabulary]]
 japanese = "だいがく"
-english = "college; university"
+english = "college;university"
 
 [[Occupations]]
 japanese = "だいがくいんせい"
