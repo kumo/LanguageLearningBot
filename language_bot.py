@@ -46,6 +46,7 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 import datetime
 import random
 
+NUM_QUESTIONS = 5
 questions = []
 
 def send_greeting(update: Update, context: CallbackContext) -> None:
@@ -82,13 +83,13 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 def start_quiz(update: Update, context: CallbackContext) -> None:
-    questions = choose_questions(5)
+    questions = choose_questions(NUM_QUESTIONS)
 
     context.user_data['questions'] = questions
     context.user_data['question_num'] = 0
     context.user_data['correct'] = 0
 
-    update.message.reply_text("I will now ask you {} questions.".format(5))
+    update.message.reply_text("I will now ask you {} questions.".format(len(questions)))
 
     ask_question(update, context)
 
@@ -149,7 +150,7 @@ def check_response(update: Update, context: CallbackContext) -> None:
     question_num = question_num + 1
     context.user_data['question_num'] = question_num
 
-    if question_num == 5:
+    if question_num == len(questions):
         end_quiz(update, context)
     else:
         ask_question(update, context)
@@ -157,8 +158,9 @@ def check_response(update: Update, context: CallbackContext) -> None:
 
 def end_quiz(update: Update, context: CallbackContext) -> None:
     correct = context.user_data['correct']
-    
-    update.message.reply_text('You scored {} out of {}.'.format(correct, 5))
+    questions = context.user_data['questions']
+
+    update.message.reply_text('You scored {} out of {}.'.format(correct, len(questions)))
     update.message.reply_text('To try again, just /start.')
 
 
