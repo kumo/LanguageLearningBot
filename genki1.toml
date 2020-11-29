@@ -65,3 +65,7 @@ english = "Thank you (polite)"
 [[greetings]]
 japanese = "ありがとう"
 english = "Thank you"
+
+[[test]]
+japanese = "ゴジラ"
+english = "Godzilla"

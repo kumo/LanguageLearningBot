@@ -19,7 +19,7 @@ bot.
 
 import logging
 
-from telegram import Update
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 # Enable logging
@@ -60,14 +60,10 @@ def send_greeting(update: Update, context: CallbackContext) -> None:
         update.message.reply_text("こんばんは")
 
 
-def choose_questions(num_questions):
-    global questions
+def choose_questions(question_set, num_questions):
+    random.shuffle(question_set)
 
-    greetings_questions = questions['greetings']
-
-    random.shuffle(greetings_questions)
-
-    questions = greetings_questions[:num_questions]
+    questions = question_set[:num_questions]
 
     return questions
 
@@ -76,20 +72,36 @@ def choose_questions(num_questions):
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
+    global questions
 
     send_greeting(update, context)
 
-    start_quiz(update, context)
+    question_sets = [*questions.keys()]
+
+    if len(question_sets) == 1:
+        start_quiz(question_sets[0], update, context)
+    else:
+        # Show the user the list of available question sets
+        quiz_keyboard = [[question_set] for question_set in question_sets]
+
+        quiz_markup = ReplyKeyboardMarkup(quiz_keyboard, one_time_keyboard=True)
+
+        update.message.reply_text("Choose the questions that you want to be tested on.", reply_markup=quiz_markup)
 
 
-def start_quiz(update: Update, context: CallbackContext) -> None:
-    questions = choose_questions(NUM_QUESTIONS)
+def start_quiz(quiz_name: str, update: Update, context: CallbackContext) -> None:
+    global questions
+    
+    question_set = questions[quiz_name]
 
-    context.user_data['questions'] = questions
+    chosen_questions = choose_questions(question_set, NUM_QUESTIONS)
+
+    context.user_data['quiz_name'] = quiz_name
+    context.user_data['questions'] = chosen_questions
     context.user_data['question_num'] = 0
     context.user_data['correct'] = 0
 
-    update.message.reply_text("I will now ask you {} questions.".format(len(questions)))
+    update.message.reply_text("I will now ask you {} questions.".format(len(chosen_questions)))
 
     ask_question(update, context)
 
@@ -129,6 +141,10 @@ def check_answer(question, reply) -> bool:
 def check_response(update: Update, context: CallbackContext) -> None:
     """Check the user's response."""
 
+    if 'quiz_name' not in context.user_data:
+        start_quiz(update.message.text, update, context)
+        return
+
     question_num = context.user_data['question_num']
     questions = context.user_data['questions']
 
@@ -162,6 +178,9 @@ def end_quiz(update: Update, context: CallbackContext) -> None:
 
     update.message.reply_text('You scored {} out of {}.'.format(correct, len(questions)))
     update.message.reply_text('To try again, just /start.')
+
+    if 'quiz_name' in context.user_data:
+        del context.user_data['quiz_name']
 
 
 import toml
