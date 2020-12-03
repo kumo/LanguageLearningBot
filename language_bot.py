@@ -66,6 +66,19 @@ def choose_questions(question_set, num_questions):
 
     questions = question_set[:num_questions]
 
+    for i, question in enumerate(questions):
+        question_type = random.choice(['japanese', 'english'])
+
+        question['question_type'] = question_type
+
+        if ';' in question[question_type]:
+            possible_questions = question[question_type].split(';')
+
+            question_text = random.choice(possible_questions)
+            question['question_text'] = question_text
+        else:
+            question['question_text'] = question[question_type]
+
     return questions
 
 
@@ -112,7 +125,8 @@ def ask_question(update: Update, context: CallbackContext) -> None:
     question_num = context.user_data['question_num']
 
     question = questions[question_num]
-    update.message.reply_text(question['japanese'])
+
+    update.message.reply_text(question[question['question_type']])
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
@@ -128,7 +142,10 @@ def compare_text(answer, reply) -> bool:
 
 
 def check_answer(question, reply) -> bool:
-    correct_answer = question['english']
+    if question['question_type'] == 'english':
+        correct_answer = question['japanese']
+    else:
+        correct_answer = question['english']
 
     if ';' in correct_answer:
         answers = correct_answer.split(';')
@@ -169,6 +186,7 @@ def check_response(update: Update, context: CallbackContext) -> None:
             update.message.reply_text('Do not forget that there are alternative answers!')
 
     else:
+        # TODO format the text properly if there are multiple correct answers
         update.message.reply_text('The correct answer was "{}".'.format(question['english']))
 
     question_num = question_num + 1
