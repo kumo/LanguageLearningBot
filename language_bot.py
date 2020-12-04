@@ -79,6 +79,11 @@ def choose_questions(question_set, num_questions):
         else:
             question['question_text'] = question[question_type]
 
+        if question_type == 'japanese':
+            question['answer_text'] = question['english']
+        else:
+            question['answer_text'] = question['japanese']
+
     return questions
 
 
@@ -126,7 +131,7 @@ def ask_question(update: Update, context: CallbackContext) -> None:
 
     question = questions[question_num]
 
-    update.message.reply_text(question[question['question_type']])
+    update.message.reply_text(question['question_text'])
 
 
 def help_command(update: Update, context: CallbackContext) -> None:
@@ -148,16 +153,16 @@ def check_answer(question, reply) -> bool:
         correct_answer = question['english']
 
     if ';' in correct_answer:
-        answers = correct_answer.split(';')
+        correct_answers = correct_answer.split(';')
 
-        for answer in answers:
-            if compare_text(answer, reply):
+        for alternative_answer in correct_answers:
+            if compare_text(alternative_answer, response):
                 return True
         
         return False
 
     else:
-        if compare_text(correct_answer, reply):
+        if compare_text(correct_answer, response):
             return True
         else:
             return False
@@ -174,6 +179,7 @@ def check_response(update: Update, context: CallbackContext) -> None:
     questions = context.user_data['questions']
 
     question = questions[question_num]
+    answer_text = question['answer_text']
 
     result = check_answer(question, update.message.text)
 
@@ -182,12 +188,12 @@ def check_response(update: Update, context: CallbackContext) -> None:
         context.user_data['correct'] += 1
 
         # TODO tell the alternative answer(s) to the user
-        if ';' in question['english']:
+        if ';' in answer_text:
             update.message.reply_text('Do not forget that there are alternative answers!')
 
     else:
         # TODO format the text properly if there are multiple correct answers
-        update.message.reply_text('The correct answer was "{}".'.format(question['english']))
+        update.message.reply_text('The correct answer was "{}".'.format(answer_text))
 
     question_num = question_num + 1
     context.user_data['question_num'] = question_num
