@@ -134,11 +134,11 @@ def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Help!')
 
 
-def compare_text(answer, reply) -> bool:
-    cleaned_answer = answer.translate(str.maketrans('', '', string.punctuation))
-    cleaned_reply = reply.translate(str.maketrans('', '', string.punctuation))
+def compare_text(text1, text2) -> bool:
+    cleaned_text1 = text1.translate(str.maketrans('', '', string.punctuation))
+    cleaned_text2 = text2.translate(str.maketrans('', '', string.punctuation))
 
-    return cleaned_answer.casefold() == cleaned_reply.casefold()
+    return cleaned_text1.casefold() == cleaned_text2.casefold()
 
 
 def check_answer(question, reply) -> bool:
