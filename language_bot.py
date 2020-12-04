@@ -146,12 +146,7 @@ def compare_text(text1, text2) -> bool:
     return cleaned_text1.casefold() == cleaned_text2.casefold()
 
 
-def check_answer(question, reply) -> bool:
-    if question['question_type'] == 'english':
-        correct_answer = question['japanese']
-    else:
-        correct_answer = question['english']
-
+def check_answer(correct_answer, response) -> bool:
     if ';' in correct_answer:
         correct_answers = correct_answer.split(';')
 
@@ -181,7 +176,7 @@ def check_response(update: Update, context: CallbackContext) -> None:
     question = questions[question_num]
     answer_text = question['answer_text']
 
-    result = check_answer(question, update.message.text)
+    result = check_answer(answer_text, update.message.text)
 
     if result == True:
         update.message.reply_text('Correct!')
