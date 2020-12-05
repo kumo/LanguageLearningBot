@@ -17,10 +17,25 @@ Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
 
+import datetime
 import logging
+import os
+import random
+import string
+from os.path import dirname, join
 
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+import toml
+from dotenv import load_dotenv
+from telegram import ReplyKeyboardMarkup, Update
+from telegram.ext import (CallbackContext, CommandHandler, Filters, MessageHandler, Updater)
+
+
+QUIZ_NAME_KEY = 'quiz_name'
+QUESTIONS_KEY = 'questions'
+QUESTION_NUM_KEY = 'question_num'
+NUM_CORRECT_KEY = 'correct'
+NUM_QUESTIONS = 5
+
 
 # Enable logging
 logging.basicConfig(
@@ -29,26 +44,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Use dotenv for bot token
-import os
-from os.path import join, dirname
-from dotenv import load_dotenv
-
-# Create .env file path.
-dotenv_path = join(dirname(__file__), '.env')
-
-# Load file from the path.
-load_dotenv(dotenv_path)
-
-# Get variables from the environment
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-
-import datetime
-import random
-import string
-
-NUM_QUESTIONS = 5
-questions = []
 
 def send_greeting(update: Update, context: CallbackContext) -> None:
     now = datetime.datetime.now()
@@ -64,9 +59,9 @@ def send_greeting(update: Update, context: CallbackContext) -> None:
 def choose_questions(question_set, num_questions):
     random.shuffle(question_set)
 
-    questions = question_set[:num_questions]
+    chosen_questions = question_set[:num_questions]
 
-    for i, question in enumerate(questions):
+    for _idx, question in enumerate(chosen_questions):
         question_type = random.choice(['japanese', 'english'])
 
         question['question_type'] = question_type
@@ -84,18 +79,20 @@ def choose_questions(question_set, num_questions):
         else:
             question['answer_text'] = question['japanese']
 
-    return questions
+    return chosen_questions
 
 
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
-    global questions
-
     send_greeting(update, context)
 
     question_sets = [*questions.keys()]
+    
+    # Perhaps the user has asked to start a new quiz
+    if QUIZ_NAME_KEY in context.user_data:
+        context.user_data.pop(QUIZ_NAME_KEY)
 
     if len(question_sets) == 1:
         start_quiz(question_sets[0], update, context)
@@ -108,17 +105,15 @@ def start(update: Update, context: CallbackContext) -> None:
         update.message.reply_text("Choose the questions that you want to be tested on.", reply_markup=quiz_markup)
 
 
-def start_quiz(quiz_name: str, update: Update, context: CallbackContext) -> None:
-    global questions
-    
-    question_set = questions[quiz_name]
+def start_quiz(name: str, update: Update, context: CallbackContext) -> None:
+    question_set = questions[name]
 
     chosen_questions = choose_questions(question_set, NUM_QUESTIONS)
 
-    context.user_data['quiz_name'] = quiz_name
-    context.user_data['questions'] = chosen_questions
-    context.user_data['question_num'] = 0
-    context.user_data['correct'] = 0
+    context.user_data[QUIZ_NAME_KEY] = name
+    context.user_data[QUESTIONS_KEY] = chosen_questions
+    context.user_data[QUESTION_NUM_KEY] = 0
+    context.user_data[NUM_CORRECT_KEY] = 0
 
     update.message.reply_text("I will now ask you {} questions.".format(len(chosen_questions)))
 
@@ -126,10 +121,10 @@ def start_quiz(quiz_name: str, update: Update, context: CallbackContext) -> None
 
 
 def ask_question(update: Update, context: CallbackContext) -> None:
-    questions = context.user_data['questions']
-    question_num = context.user_data['question_num']
+    quiz_questions = context.user_data[QUESTIONS_KEY]
+    question_num = context.user_data[QUESTION_NUM_KEY]
 
-    question = questions[question_num]
+    question = quiz_questions[question_num]
 
     update.message.reply_text(question['question_text'])
 
@@ -153,34 +148,30 @@ def check_answer(correct_answer, response) -> bool:
         for alternative_answer in correct_answers:
             if compare_text(alternative_answer, response):
                 return True
-        
+
         return False
 
-    else:
-        if compare_text(correct_answer, response):
-            return True
-        else:
-            return False
+    return compare_text(correct_answer, response)
 
 
 def check_response(update: Update, context: CallbackContext) -> None:
     """Check the user's response."""
 
-    if 'quiz_name' not in context.user_data:
+    if QUIZ_NAME_KEY not in context.user_data:
         start_quiz(update.message.text, update, context)
         return
 
-    question_num = context.user_data['question_num']
-    questions = context.user_data['questions']
+    question_num = context.user_data[QUESTION_NUM_KEY]
+    quiz_questions = context.user_data[QUESTIONS_KEY]
 
-    question = questions[question_num]
+    question = quiz_questions[question_num]
     answer_text = question['answer_text']
 
-    result = check_answer(answer_text, update.message.text)
+    is_correct = check_answer(answer_text, update.message.text)
 
-    if result == True:
+    if is_correct:
         update.message.reply_text('Correct!')
-        context.user_data['correct'] += 1
+        context.user_data[NUM_CORRECT_KEY] += 1
 
         # TODO tell the alternative answer(s) to the user
         if ';' in answer_text:
@@ -188,10 +179,10 @@ def check_response(update: Update, context: CallbackContext) -> None:
 
     else:
         # TODO format the text properly if there are multiple correct answers
-        update.message.reply_text('The correct answer was "{}".'.format(answer_text))
+        update.message.reply_text('The correct answer was "{0}".'.format(answer_text))
 
     question_num = question_num + 1
-    context.user_data['question_num'] = question_num
+    context.user_data[QUESTION_NUM_KEY] = question_num
 
     if question_num == len(questions):
         end_quiz(update, context)
@@ -200,28 +191,30 @@ def check_response(update: Update, context: CallbackContext) -> None:
 
 
 def end_quiz(update: Update, context: CallbackContext) -> None:
-    correct = context.user_data['correct']
-    questions = context.user_data['questions']
+    correct = context.user_data[NUM_CORRECT_KEY]
+    questions = context.user_data[QUESTIONS_KEY]
 
     update.message.reply_text('You scored {} out of {}.'.format(correct, len(questions)))
     update.message.reply_text('To try again, just /start.')
 
-    if 'quiz_name' in context.user_data:
-        del context.user_data['quiz_name']
+    if QUIZ_NAME_KEY in context.user_data:
+        context.user_data.pop(QUIZ_NAME_KEY)
 
-
-import toml
 
 def load_questions():
     global questions
     
     questions = toml.load("genki1.toml")
 
-    print(questions)
-
 
 def main():
     load_questions()
+    
+    dotenv_path = join(dirname(__file__), '.env')
+    load_dotenv(dotenv_path)
+    
+    # Get variables from the environment
+    BOT_TOKEN = os.getenv('BOT_TOKEN')
 
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
