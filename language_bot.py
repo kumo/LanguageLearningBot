@@ -184,7 +184,7 @@ def check_response(update: Update, context: CallbackContext) -> None:
     question_num = question_num + 1
     context.user_data[QUESTION_NUM_KEY] = question_num
 
-    if question_num == len(questions):
+    if question_num == len(quiz_questions):
         end_quiz(update, context)
     else:
         ask_question(update, context)
@@ -192,9 +192,9 @@ def check_response(update: Update, context: CallbackContext) -> None:
 
 def end_quiz(update: Update, context: CallbackContext) -> None:
     correct = context.user_data[NUM_CORRECT_KEY]
-    questions = context.user_data[QUESTIONS_KEY]
+    quiz_questions = context.user_data[QUESTIONS_KEY]
 
-    update.message.reply_text('You scored {} out of {}.'.format(correct, len(questions)))
+    update.message.reply_text('You scored {} out of {}.'.format(correct, len(quiz_questions)))
     update.message.reply_text('To try again, just /start.')
 
     if QUIZ_NAME_KEY in context.user_data:
